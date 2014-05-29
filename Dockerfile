@@ -22,19 +22,18 @@ RUN git clone https://github.com/praekelt/unicore-mama-sbm.git
 #Install dependencies
 WORKDIR unicore-mama-sbm
 RUN virtualenv ve
-RUN . ve/bin/activate
-RUN pip install -r requirements.pip
+RUN ve/bin/pip install -r requirements.pip
 
 
 # Set the default directory where CMD will execute
 WORKDIR mamasbm
 
 # Run database migrations
-CMD alembic upgrade head
+CMD ../ve/bin/alembic upgrade head
 
 # Expose ports
 EXPOSE 8000
 
 # Set the default command to execute
 # when creating a new container
-CMD gunicorn --paste production.ini --chdir .
+CMD ../ve/bin/gunicorn --paste production.ini --chdir .
