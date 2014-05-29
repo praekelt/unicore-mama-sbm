@@ -26,7 +26,7 @@ ADD /unicore-mama-sbm /unicore-mama-sbm
 RUN apt-get install -y unicore-mama-sbm
 
 # Expose ports
-EXPOSE 80
+EXPOSE 8000
 
 # Set the default directory where CMD will execute
 WORKDIR /var/praekelt/unicore-mama-sbm/mamasbm
