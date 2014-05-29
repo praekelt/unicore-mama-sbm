@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp -a mamasbm ./build/
+cp -a unicore-mama-sbm ./build/
