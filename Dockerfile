@@ -17,20 +17,24 @@ RUN apt-get install -y tar git curl nano wget dialog net-tools build-essential
 RUN apt-get install -y python python-dev python-distribute python-pip python-virtualenv
 
 # Copy the application folder inside the container
-ADD /mamasbm /mamasbm
+RUN git clone https://github.com/praekelt/unicore-mama-sbm.git
 
-# Install the mama sbm app
-RUN apt-get install -y unicore-mama-sbm --force-yes
+#Install dependencies
+WORKDIR unicore-mama-sbm
+RUN virtualenv ve
+RUN source ve/bin/activate
+RUN pip install -r requirements.pip
+
+
+# Set the default directory where CMD will execute
+WORKDIR mamasbm
+
+# Run database migrations
+CMD alembic upgrade head
 
 # Expose ports
 EXPOSE 8000
 
-# Set the default directory where CMD will execute
-WORKDIR /var/praekelt/unicore-mama-sbm/mamasbm
-
-# Run database migrations
-CMD /var/praekelt/python/bin/alembic upgrade head
-
 # Set the default command to execute
 # when creating a new container
-CMD /var/praekelt/python/bin/gunicorn --paste production.ini --chdir .
+CMD gunicorn --paste production.ini --chdir .
