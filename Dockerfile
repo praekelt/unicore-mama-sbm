@@ -4,9 +4,6 @@ FROM ubuntu
 # File Author / Maintainer
 MAINTAINER Preakelt Foundation dev@praekelt.com
 
-# Add the application resources URL
-RUN echo "deb http://archive.ubuntu.com/ubuntu/ trusty main universe" >> /etc/apt/sources.list
-
 # Add the praekelt resources URL
 RUN echo "deb http://repo:4b1ec522503c942a364de702deaf1402@apt.praekelt.com/qa/ trusty main" >> /etc/apt/sources.list
 
