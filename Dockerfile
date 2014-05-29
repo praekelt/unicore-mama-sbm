@@ -22,7 +22,7 @@ RUN git clone https://github.com/praekelt/unicore-mama-sbm.git
 #Install dependencies
 WORKDIR unicore-mama-sbm
 RUN virtualenv ve
-RUN source ve/bin/activate
+RUN . ve/bin/activate
 RUN pip install -r requirements.pip
 
 
