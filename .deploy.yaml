@@ -5,5 +5,6 @@ postinstall: sideloader/postinstall.sh
 pip:
  - gunicorn
  - pyramid
+ - mamasbm
 dependencies:
  - python-yaml
