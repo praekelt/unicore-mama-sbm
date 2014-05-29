@@ -5,6 +5,12 @@ postinstall: sideloader/postinstall.sh
 pip:
  - gunicorn
  - pyramid
- - mamasbm
+ - pyramid_chameleon
+ - pyramid_debugtoolbar
+ - pyramid_tm
+ - SQLAlchemy
+ - transaction
+ - zope.sqlalchemy
+ - waitress
 dependencies:
  - python-yaml
