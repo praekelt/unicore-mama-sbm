@@ -31,6 +31,9 @@ EXPOSE 80
 # Set the default directory where CMD will execute
 WORKDIR /var/praekelt/unicore-mama-sbm/mamasbm
 
+# Run database migrations
+CMD /var/praekelt/python/bin/alembic upgrade head
+
 # Set the default command to execute
 # when creating a new container
 CMD /var/praekelt/python/bin/gunicorn --paste production.ini --chdir .
