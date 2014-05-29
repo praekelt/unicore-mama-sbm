@@ -23,7 +23,7 @@ RUN apt-get install -y python python-dev python-distribute python-pip
 ADD /mamasbm /mamasbm
 
 # Install the mama sbm app
-RUN apt-get install -y unicore-mama-sbm
+RUN apt-get install -y unicore-mama-sbm --force-yes
 
 # Expose ports
 EXPOSE 8000
