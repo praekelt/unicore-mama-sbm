@@ -20,7 +20,7 @@ RUN apt-get install -y tar git curl nano wget dialog net-tools build-essential
 RUN apt-get install -y python python-dev python-distribute python-pip
 
 # Copy the application folder inside the container
-ADD /unicore-mama-sbm /unicore-mama-sbm
+ADD /mamasbm /mamasbm
 
 # Install the mama sbm app
 RUN apt-get install -y unicore-mama-sbm
