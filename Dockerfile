@@ -16,6 +16,7 @@ RUN curl -Lso unicoredocker.tar.gz https://github.com/praekelt/unicore-mama-sbm/
 
 #Install dependencies
 WORKDIR /praekelt-unicore-mama-sbm
+RUN cp run.sh /
 RUN virtualenv ve
 RUN ve/bin/pip install -r requirements.pip
 
