@@ -17,13 +17,13 @@ RUN apt-get install -y python python-dev python-distribute python-pip python-vir
 RUN git clone https://github.com/praekelt/unicore-mama-sbm.git
 
 #Install dependencies
-WORKDIR unicore-mama-sbm
+WORKDIR /unicore-mama-sbm
 RUN virtualenv ve
 RUN ve/bin/pip install -r requirements.pip
 
 
 # Set the default directory where CMD will execute
-WORKDIR mamasbm
+WORKDIR /unicore-mama-sbm/mamasbm
 
 # Run database migrations
 CMD ../ve/bin/alembic upgrade head
