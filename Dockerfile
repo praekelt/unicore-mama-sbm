@@ -22,12 +22,9 @@ RUN git pull
 RUN virtualenv ve
 RUN ve/bin/pip install -r requirements.pip
 
-
-# Set the default directory where CMD will execute
-WORKDIR /unicore-mama-sbm/mamasbm
-
 # Run database migrations
-CMD ../ve/bin/alembic upgrade head
+WORKDIR /unicore-mama-sbm/mamasbm
+RUN ../ve/bin/alembic upgrade head
 
 # Expose ports
 EXPOSE 8000
