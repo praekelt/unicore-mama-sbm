@@ -8,3 +8,4 @@ transaction
 zope.sqlalchemy
 waitress
 alembic
+-e mamasbm
