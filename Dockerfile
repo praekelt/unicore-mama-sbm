@@ -7,23 +7,20 @@ MAINTAINER Preakelt Foundation dev@praekelt.com
 # Update the sources list
 RUN apt-get update
 
-# Install basic applications
-RUN apt-get install -y git build-essential
-
 # Install Python and Basic Python Tools
-RUN apt-get install -y python python-dev python-distribute python-pip python-virtualenv
+RUN apt-get install -y curl tar python python-dev python-distribute python-pip python-virtualenv
 
 # Copy the application folder inside the container
-RUN git clone https://github.com/praekelt/unicore-mama-sbm.git
+RUN curl -Lso unicoredocker.tar.gz https://github.com/praekelt/unicore-mama-sbm/tarball/develop/; tar xf unicoredocker.tar.gz; name=$(tar -tzf unicoredocker.tar.gz | head -n 1); mv $name $(echo $name | cut -d'-' -f 1-4); rm unicoredocker.tar.gz
 
 #Install dependencies
-WORKDIR /unicore-mama-sbm
+WORKDIR /praekelt-unicore-mama-sbm
 RUN git pull
 RUN virtualenv ve
 RUN ve/bin/pip install -r requirements.pip
 
 # Run database migrations
-WORKDIR /unicore-mama-sbm/mamasbm
+WORKDIR /praekelt-unicore-mama-sbm/mamasbm
 RUN ../ve/bin/alembic upgrade head
 
 # Expose ports
