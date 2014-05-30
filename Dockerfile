@@ -8,7 +8,8 @@ MAINTAINER Preakelt Foundation dev@praekelt.com
 RUN apt-get update
 
 # Install Python and Basic Python Tools
-RUN apt-get install -y curl tar python python-dev python-distribute python-pip python-virtualenv
+RUN apt-get install --no-install-recommends -y curl tar python python-dev python-distribute python-pip python-virtualenv
+RUN apt-get remove -y perl --auto-remove
 
 # Copy the application folder inside the container
 RUN curl -Lso unicoredocker.tar.gz https://github.com/praekelt/unicore-mama-sbm/tarball/develop/; tar xf unicoredocker.tar.gz; name=$(tar -tzf unicoredocker.tar.gz | head -n 1); mv $name $(echo $name | cut -d'-' -f 1-4); rm unicoredocker.tar.gz
