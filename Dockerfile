@@ -18,6 +18,7 @@ RUN git clone https://github.com/praekelt/unicore-mama-sbm.git
 
 #Install dependencies
 WORKDIR /unicore-mama-sbm
+RUN git pull
 RUN virtualenv ve
 RUN ve/bin/pip install -r requirements.pip
 
