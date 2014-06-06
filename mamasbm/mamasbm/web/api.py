@@ -16,5 +16,4 @@ def get_profiles(request):
         all_profiles = DBSession.query(Profile).all()
         return {'profiles': [p.to_dict() for p in all_profiles]}
     except DBAPIError:
-        return request.errors.add(
-            'Pyramid is having a problem using your SQL database.')
+        request.errors.add('Could not connect to the database.')
