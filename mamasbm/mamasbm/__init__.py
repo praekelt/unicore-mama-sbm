@@ -4,7 +4,7 @@ from sqlalchemy import engine_from_config
 from .models import (
     DBSession,
     Base,
-    )
+)
 
 
 def main(global_config, **settings):
@@ -15,7 +15,9 @@ def main(global_config, **settings):
     Base.metadata.bind = engine
     config = Configurator(settings=settings)
     config.include('pyramid_chameleon')
+    config.include("cornice")
     config.add_static_view('static', 'static')
     config.add_route('home', '/')
+    config.scan("mamasbm.views")
     config.scan()
     return config.make_wsgi_app()
