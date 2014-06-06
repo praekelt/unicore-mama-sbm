@@ -1,9 +1,8 @@
-from cornice import Service
 from pyramid.response import Response
 from pyramid.view import view_config
 from sqlalchemy.exc import DBAPIError
 
-from .models import (
+from mamasbm.models import (
     DBSession,
     MyModel,
 )
@@ -18,14 +17,3 @@ def my_view(request):
             'Pyramid is having a problem using your SQL database.',
             content_type='text/plain', status_int=500)
     return {'one': one, 'project': 'mamasbm'}
-
-profiles = Service(
-    name='profiles',
-    path='/profiles.json',
-    description="Manages stage based messaging profiles"
-)
-
-
-@profiles.get()
-def get_profiles(request):
-    return {'profiles': ['profile1', 'profile2']}

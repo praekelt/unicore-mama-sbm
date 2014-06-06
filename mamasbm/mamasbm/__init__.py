@@ -1,7 +1,7 @@
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 
-from .models import (
+from mamasbm.models import (
     DBSession,
     Base,
 )
@@ -18,6 +18,6 @@ def main(global_config, **settings):
     config.include("cornice")
     config.add_static_view('static', 'static')
     config.add_route('home', '/')
-    config.scan("mamasbm.views")
-    config.scan()
+    config.scan("mamasbm.web.api")
+    config.scan("mamasbm.web.views")
     return config.make_wsgi_app()
