@@ -27,10 +27,19 @@ class MyModel(Base):
 Index('my_index', MyModel.name, unique=True, mysql_length=255)
 
 
-class Profiles(Base):
+class Profile(Base):
     __tablename__ = 'profiles'
     id = Column(Integer, primary_key=True)
     title = Column(Text)
     num_messages_pre = Column(Integer)
     num_messages_post = Column(Integer)
     send_days = Column(Text)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'num_messages_pre': self.num_messages_pre,
+            'num_messages_post': self.num_messages_post,
+            'send_days': self.send_days,
+        }

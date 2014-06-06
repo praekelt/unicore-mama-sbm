@@ -1,4 +1,7 @@
 from cornice import Service
+from sqlalchemy.exc import DBAPIError
+
+from mamasbm.models import DBSession, Profile
 
 profiles = Service(
     name='profiles',
@@ -9,4 +12,9 @@ profiles = Service(
 
 @profiles.get()
 def get_profiles(request):
-    return {'profiles': ['profile1', 'profile2']}
+    try:
+        all_profiles = DBSession.query(Profile).all()
+        return {'profiles': [p.to_dict() for p in all_profiles]}
+    except DBAPIError:
+        return request.errors.add(
+            'Pyramid is having a problem using your SQL database.')
