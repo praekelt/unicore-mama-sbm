@@ -33,3 +33,14 @@ class TestProfilesView(TestCase):
         resp = self.app.get('/web/api/profiles.json', status=200)
         self.assertEquals(len(resp.json['profiles']), 1)
         self.assertEquals(resp.json['profiles'][0]['title'], 'Mama basic')
+
+    def test_get_profiles_db_error(self):
+        # drop all the tables
+        Base.metadata.drop_all()
+
+        resp = self.app.get('/web/api/profiles.json', status=400)
+        self.assertEquals(resp.json['status'], 'error')
+        self.assertEquals(
+            resp.json['errors'][0]['location'],
+            'Could not connect to the database.'
+        )
