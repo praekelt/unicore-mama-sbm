@@ -28,7 +28,7 @@ Index('my_index', MyModel.name, unique=True, mysql_length=255)
 
 
 class Profiles(Base):
-    __tablename__ = 'models'
+    __tablename__ = 'profiles'
     id = Column(Integer, primary_key=True)
     title = Column(Text)
     num_messages_pre = Column(Integer)
