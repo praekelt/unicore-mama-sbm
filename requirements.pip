@@ -8,4 +8,6 @@ transaction
 zope.sqlalchemy
 waitress
 alembic
+webtest
+cornice
 -e mamasbm
