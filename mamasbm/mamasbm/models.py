@@ -25,3 +25,12 @@ class MyModel(Base):
     value = Column(Integer)
 
 Index('my_index', MyModel.name, unique=True, mysql_length=255)
+
+
+class Profiles(Base):
+    __tablename__ = 'models'
+    id = Column(Integer, primary_key=True)
+    title = Column(Text)
+    num_messages_pre = Column(Integer)
+    num_messages_post = Column(Integer)
+    send_days = Column(Text)
