@@ -48,6 +48,48 @@ class TestProfilesView(TestCase):
         self.assertEquals(len(resp.json['profiles']), 1)
         self.assertEquals(resp.json['profiles'][0]['title'], 'Mama basic')
 
+    def test_put_profiles_missing_required_fields(self):
+        resp = self.app.put_json('/web/api/profiles.json', {}, status=400)
+        self.assertEquals(resp.json['status'], 'error')
+
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'title is a required field.'
+        )
+        self.assertEquals(
+            resp.json['errors'][1]['description'],
+            'send_days is a required field.'
+        )
+        self.assertEquals(
+            resp.json['errors'][2]['description'],
+            'num_messages_pre is a required field.'
+        )
+        self.assertEquals(
+            resp.json['errors'][3]['description'],
+            'num_messages_post is a required field.'
+        )
+
+        resp = self.app.get('/web/api/profiles.json', status=200)
+        self.assertEquals(len(resp.json['profiles']), 0)
+
+    def test_put_profiles_title_missing_required_field(self):
+        payload = {
+            'send_days': '1,4',
+            'num_messages_pre': 36,
+            'num_messages_post': 52
+        }
+        resp = self.app.put_json('/web/api/profiles.json', payload, status=400)
+        self.assertEquals(resp.json['status'], 'error')
+
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'title is a required field.'
+        )
+        self.assertEquals(len(resp.json['errors']), 1)
+
+        resp = self.app.get('/web/api/profiles.json', status=200)
+        self.assertEquals(len(resp.json['profiles']), 0)
+
     def test_get_profiles_db_error(self):
         # drop all the tables
         Base.metadata.drop_all()

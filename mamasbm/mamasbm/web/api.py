@@ -25,7 +25,7 @@ def get_profiles(request):
 def validate_required_field(request, name):
     data = json.loads(request.body)
     if name not in data or not data[name]:
-        request.errors.add('body', name, '%s is a required field' % name)
+        request.errors.add('body', name, '%s is a required field.' % name)
     else:
         request.validated[name] = data[name]
 
