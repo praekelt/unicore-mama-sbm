@@ -22,8 +22,7 @@ def get_profiles(request):
         request.errors.add('Could not connect to the database.')
 
 
-def validate_required_field(request, name):
-    data = json.loads(request.body)
+def validate_required_field(request, data, name):
     if name not in data or not data[name]:
         request.errors.add('body', name, '%s is a required field.' % name)
     else:
@@ -31,10 +30,11 @@ def validate_required_field(request, name):
 
 
 def valid_put_request(request):
-    validate_required_field(request, 'title')
-    validate_required_field(request, 'send_days')
-    validate_required_field(request, 'num_messages_pre')
-    validate_required_field(request, 'num_messages_post')
+    data = json.loads(request.body)
+    validate_required_field(request, data, 'title')
+    validate_required_field(request, data, 'send_days')
+    validate_required_field(request, data, 'num_messages_pre')
+    validate_required_field(request, data, 'num_messages_post')
 
 
 @profiles.put(validators=valid_put_request)
