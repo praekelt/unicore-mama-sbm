@@ -13,6 +13,18 @@ profiles = Service(
 )
 
 
+def update_validated_field(request, data, key):
+    if key in data and data[key]:
+        request.validated[key] = data[key]
+
+
+def validate_required_field(request, data, key):
+    if key not in data or not data[key]:
+        request.errors.add('body', key, '%s is a required field.' % key)
+    else:
+        update_validated_field(request, data, key)
+
+
 @profiles.get()
 def get_profiles(request):
     try:
@@ -20,13 +32,6 @@ def get_profiles(request):
         return {'profiles': [p.to_dict() for p in all_profiles]}
     except DBAPIError:
         request.errors.add('Could not connect to the database.')
-
-
-def validate_required_field(request, data, name):
-    if name not in data or not data[name]:
-        request.errors.add('body', name, '%s is a required field.' % name)
-    else:
-        request.validated[name] = data[name]
 
 
 def valid_put_request(request):
@@ -49,6 +54,39 @@ def put_profiles(request):
         with transaction.manager:
             model = Profile(**post_data)
             DBSession.add(model)
+        return {'success': True}
+    except DBAPIError:
+        request.errors.add('Could not connect to the database.')
+
+
+def valid_post_request(request):
+    data = json.loads(request.body)
+    validate_required_field(request, data, 'uuid')
+
+    update_validated_field(request, data, 'title')
+    update_validated_field(request, data, 'send_days')
+    update_validated_field(request, data, 'num_messages_pre')
+    update_validated_field(request, data, 'num_messages_post')
+
+
+@profiles.post(validators=valid_post_request)
+def post_profiles(request):
+    uuid = request.validated['uuid']
+    title = request.validated.get('title')
+    send_days = request.validated.get('send_days')
+    num_messages_pre = request.validated.get('num_messages_pre')
+    num_messages_post = request.validated.get('num_messages_post')
+    try:
+        with transaction.manager:
+            profile = DBSession.query(Profile).get(uuid)
+            if title:
+                profile.title = title
+            if send_days:
+                profile.send_days = send_days
+            if num_messages_pre:
+                profile.num_messages_pre = num_messages_pre
+            if num_messages_post:
+                profile.num_messages_post = num_messages_post
         return {'success': True}
     except DBAPIError:
         request.errors.add('Could not connect to the database.')
