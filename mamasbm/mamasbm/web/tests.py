@@ -115,6 +115,37 @@ class TestProfilesView(TestCase):
         self.assertEquals(len(resp.json['profiles']), 1)
         self.assertEquals(resp.json['profiles'][0]['title'], 'Mama basic new')
 
+    def test_update_profile_all(self):
+        data = {
+            'title': 'Mama basic',
+            'send_days': '1,4',
+            'num_messages_pre': 36,
+            'num_messages_post': 52
+        }
+        resp = self.app.put_json('/web/api/profiles.json', data, status=200)
+        self.assertTrue(resp.json['success'])
+
+        resp = self.app.get('/web/api/profiles.json', status=200)
+        self.assertEquals(len(resp.json['profiles']), 1)
+        self.assertEquals(resp.json['profiles'][0]['title'], 'Mama basic')
+        data = {
+            'title': 'Mama basic new',
+            'send_days': '1, 7',
+            'num_messages_pre': 36,
+            'num_messages_post': 60,
+            'uuid': resp.json['profiles'][0]['uuid']
+        }
+
+        resp = self.app.post_json('/web/api/profiles.json', data, status=200)
+        self.assertTrue(resp.json['success'])
+
+        resp = self.app.get('/web/api/profiles.json', status=200)
+        self.assertEquals(len(resp.json['profiles']), 1)
+        self.assertEquals(resp.json['profiles'][0]['title'], 'Mama basic new')
+        self.assertEquals(resp.json['profiles'][0]['send_days'], '1, 7')
+        self.assertEquals(resp.json['profiles'][0]['num_messages_pre'], 36)
+        self.assertEquals(resp.json['profiles'][0]['num_messages_post'], 60)
+
     def test_get_profiles_db_error(self):
         # drop all the tables
         Base.metadata.drop_all()
