@@ -34,7 +34,7 @@ def get_profiles(request):
         request.errors.add('Could not connect to the database.')
 
 
-def valid_put_request(request):
+def validate_put_request(request):
     data = json.loads(request.body)
     validate_required_field(request, data, 'title')
     validate_required_field(request, data, 'send_days')
@@ -42,7 +42,7 @@ def valid_put_request(request):
     validate_required_field(request, data, 'num_messages_post')
 
 
-@profiles.put(validators=valid_put_request)
+@profiles.put(validators=validate_put_request)
 def put_profiles(request):
     post_data = {
         'title': request.validated['title'],
@@ -59,7 +59,7 @@ def put_profiles(request):
         request.errors.add('Could not connect to the database.')
 
 
-def valid_post_request(request):
+def validate_post_request(request):
     data = json.loads(request.body)
     validate_required_field(request, data, 'uuid')
 
@@ -69,7 +69,7 @@ def valid_post_request(request):
     update_validated_field(request, data, 'num_messages_post')
 
 
-@profiles.post(validators=valid_post_request)
+@profiles.post(validators=validate_post_request)
 def post_profiles(request):
     uuid = request.validated['uuid']
     title = request.validated.get('title')
