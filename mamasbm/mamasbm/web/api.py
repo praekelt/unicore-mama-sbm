@@ -69,6 +69,11 @@ def validate_post_request(request):
     update_validated_field(request, data, 'num_messages_post')
 
 
+def validate_delete_request(request):
+    data = json.loads(request.body)
+    validate_required_field(request, data, 'uuid')
+
+
 @profiles.post(validators=validate_post_request)
 def post_profiles(request):
     uuid = request.validated['uuid']
@@ -87,6 +92,18 @@ def post_profiles(request):
                 profile.num_messages_pre = num_messages_pre
             if num_messages_post:
                 profile.num_messages_post = num_messages_post
+        return {'success': True}
+    except DBAPIError:
+        request.errors.add('Could not connect to the database.')
+
+
+@profiles.delete(validators=validate_delete_request)
+def delete_profile(request):
+    uuid = request.validated['uuid']
+    try:
+        with transaction.manager:
+            profile = DBSession.query(Profile).get(uuid)
+            DBSession.delete(profile)
         return {'success': True}
     except DBAPIError:
         request.errors.add('Could not connect to the database.')
