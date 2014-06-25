@@ -27,9 +27,17 @@ def validate_required_field(request, data, key):
 
 @profiles.get()
 def get_profiles(request):
+    uuid = request.GET.get('uuid', None)
     try:
-        all_profiles = DBSession.query(Profile).all()
-        return {'profiles': [p.to_dict() for p in all_profiles]}
+        if uuid:
+            profile = DBSession.query(Profile).get(uuid)
+            if not profile:
+                request.errors.add('Profile not found.')
+                return
+            return profile.to_dict()
+
+        qs = DBSession.query(Profile).all()
+        return {'profiles': [p.to_dict() for p in qs]}
     except DBAPIError:
         request.errors.add('Could not connect to the database.')
 

@@ -18,6 +18,7 @@ def main(global_config, **settings):
     config.include("cornice")
     config.add_static_view('static', 'static')
     config.add_route('home', '/')
+    config.add_route('admin_profiles', '/admin/profiles/')
     config.scan("mamasbm.web.api")
     config.scan("mamasbm.web.views")
     return config.make_wsgi_app()

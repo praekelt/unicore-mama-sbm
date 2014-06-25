@@ -17,3 +17,8 @@ def my_view(request):
             'Pyramid is having a problem using your SQL database.',
             content_type='text/plain', status_int=500)
     return {'one': one, 'project': 'mamasbm'}
+
+
+@view_config(route_name='admin_profiles', renderer='templates/profiles.pt')
+def profiles_view(request):
+    return {}
