@@ -60,5 +60,5 @@ class Profile(Base):
             'title': self.title,
             'num_messages_pre': self.num_messages_pre,
             'num_messages_post': self.num_messages_post,
-            'send_days': self.send_days,
+            'send_days': [int(d) for d in self.send_days.split(',')],
         }

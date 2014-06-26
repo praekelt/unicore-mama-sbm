@@ -3,7 +3,8 @@
 var profilesApp = angular.module('profilesApp', [
   'ngRoute',
   'profilesControllers',
-  'profilesServices'
+  'profilesServices',
+  'profilesDirectives'
 ]);
 
 profilesApp.config(['$routeProvider',
