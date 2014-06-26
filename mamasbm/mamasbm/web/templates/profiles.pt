@@ -23,7 +23,9 @@
     <script src="${request.static_url('mamasbm:static/bootstrap.min.js')}"></script>
     <script src="${request.static_url('mamasbm:static/bower_components/angular/angular.js')}"></script>
     <script src="${request.static_url('mamasbm:static/bower_components/angular-route/angular-route.js')}"></script>
+    <script src="${request.static_url('mamasbm:static/bower_components/angular-resource/angular-resource.js')}"></script>
     <script src="${request.static_url('mamasbm:static/js/app.js')}"></script>
+    <script src="${request.static_url('mamasbm:static/js/services.js')}"></script>
     <script src="${request.static_url('mamasbm:static/js/controllers.js')}"></script>
   </head>
 

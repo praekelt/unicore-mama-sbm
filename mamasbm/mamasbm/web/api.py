@@ -37,7 +37,7 @@ def get_profiles(request):
             return profile.to_dict()
 
         qs = DBSession.query(Profile).all()
-        return {'profiles': [p.to_dict() for p in qs]}
+        return [p.to_dict() for p in qs]
     except DBAPIError:
         request.errors.add('Could not connect to the database.')
 
