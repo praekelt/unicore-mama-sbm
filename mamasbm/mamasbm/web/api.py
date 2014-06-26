@@ -2,7 +2,7 @@ import json
 import transaction
 
 from cornice import Service
-from sqlalchemy.exc import DBAPIError
+from sqlalchemy.exc import DBAPIError, StatementError
 
 from mamasbm.models import DBSession, Profile
 
@@ -39,7 +39,9 @@ def get_profiles(request):
         qs = DBSession.query(Profile).all()
         return [p.to_dict() for p in qs]
     except DBAPIError:
-        request.errors.add('Could not connect to the database.')
+        request.errors.add('db', 'DBAPIError', 'Could not connect to the database.')
+    except StatementError:
+        request.errors.add('db', 'ValueError', 'uuid is not valid.')
 
 
 def validate_put_request(request):
