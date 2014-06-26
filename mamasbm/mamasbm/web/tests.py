@@ -197,7 +197,8 @@ class TestProfilesView(TestCase):
             'uuid': resp.json[0]['uuid']
         }
 
-        resp = self.app.delete_json('/web/api/profiles.json', data, status=200)
+        resp = self.app.delete(
+            '/web/api/profiles.json?uuid=%(uuid)s' % data, status=200)
         self.assertTrue(resp.json['success'])
 
         resp = self.app.get('/web/api/profiles.json', status=200)

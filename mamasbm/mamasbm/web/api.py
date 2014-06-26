@@ -83,7 +83,7 @@ def validate_post_request(request):
 
 
 def validate_delete_request(request):
-    data = json.loads(request.body)
+    data = {'uuid': request.GET.get('uuid', None)}
     validate_required_field(request, data, 'uuid')
 
 

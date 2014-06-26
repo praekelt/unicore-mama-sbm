@@ -5,13 +5,10 @@
         <form novalidate class="simple-form">
             <input type="text" ng-model="profile.title" /><br />
             When do messages get sent?
-            <span class="multiselect-container">
             <select class="multiselect" data-placeholder="Select Send Days"
               ng-model="profile.send_days" ng-options="item.id as item.name for item in send_days"
               multiple="multiple" multiselect-dropdown >
-            </select>
-        </span>
-            <input type="text" ng-model="profile.send_days" /><br />
+            </select><br/>
             How many messages during pregnancy? <input type="number" ng-model="profile.num_messages_pre" /><br />
             How many messages after birth? <input type="number" ng-model="profile.num_messages_post" /><br />
             <button ng-click="profile.$save()">SAVE</button>
