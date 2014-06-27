@@ -6,12 +6,11 @@ profilesDirectives.directive('multiselectDropdown', [function() {
         // Below setup the dropdown:
 
         element.multiselect({
-            buttonClass : 'btn btn-sm',
+            buttonClass : 'btn btn-sm btn-default',
             buttonWidth : '200px',
             buttonContainer : '<div class="btn-group" />',
-            maxHeight : 200,
-            enableFiltering : true,
-            enableCaseInsensitiveFiltering: true,
+            maxHeight : 230,
+            enableFiltering : false,
             buttonText : function(options) {
                 if (options.length === 0) {
                     return element.data()['placeholder'] + ' <b class="caret"></b>';
