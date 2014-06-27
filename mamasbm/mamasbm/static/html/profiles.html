@@ -1,8 +1,12 @@
 <div class="row">
-    <h1>Messaging Profiles</h1>
+    <h2>Messaging Profiles <a class="pull-right btn btn-primary btn-xs" href="#/profiles/new"><i class="glyphicon glyphicon-plus"></i></a></h2>
     <div class="panel panel-primary span4">
     <div class="panel-body">
-      <h4 ng-repeat="profile in profiles"><a href="#/profiles/{{profile.uuid}}" class="thumb">{{profile.title}}</a></h4>
+        <h4 ng-repeat="profile in profiles">
+            <div ng-if="profile">
+            <a href="#/profiles/{{profile.uuid}}" class="thumb">{{profile.title}}</a> &nbsp;&nbsp;<button class="btn btn-danger btn-xs" ng-click="remove(profile)"><i class="glyphicon glyphicon-remove"></i></button>
+            </div>
+        </h4>
     </div>
     </div>
 </div>

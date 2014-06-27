@@ -19,6 +19,33 @@ h6 {
 p {
   font-weight: 300;
 }
+
+.multiselect-container li.active a:hover{
+  color: #428BCA;
+  background-color: #f5f5f5;
+}
+
+.multiselect-container li.active a{
+  background-color: #fff;
+  color: #428BCA;
+}
+.multiselect-container li a{
+  color: #262626;
+}
+
+.multiselect-container li a label.checkbox{
+  font-weight: normal;
+  margin: 2px 0;
+}
+
+form input.ng-invalid.ng-dirty {
+  background-color: #FA787E;
+}
+
+form input.ng-valid.ng-dirty {
+  background-color: #78FA89;
+}
+
 .font-normal {
   font-weight: 400;
 }

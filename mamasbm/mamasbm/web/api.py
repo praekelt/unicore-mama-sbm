@@ -2,7 +2,7 @@ import json
 import transaction
 
 from cornice import Service
-from sqlalchemy.exc import DBAPIError
+from sqlalchemy.exc import DBAPIError, StatementError
 
 from mamasbm.models import DBSession, Profile
 
@@ -37,9 +37,11 @@ def get_profiles(request):
             return profile.to_dict()
 
         qs = DBSession.query(Profile).all()
-        return {'profiles': [p.to_dict() for p in qs]}
+        return [p.to_dict() for p in qs]
     except DBAPIError:
-        request.errors.add('Could not connect to the database.')
+        request.errors.add('db', 'DBAPIError', 'Could not connect to the database.')
+    except StatementError:
+        request.errors.add('db', 'ValueError', 'uuid is not valid.')
 
 
 def validate_put_request(request):
@@ -52,9 +54,12 @@ def validate_put_request(request):
 
 @profiles.put(validators=validate_put_request)
 def put_profiles(request):
+    send_days = ', '.join(
+        [str(x) for x in request.validated['send_days']])
+
     post_data = {
         'title': request.validated['title'],
-        'send_days': request.validated['send_days'],
+        'send_days': send_days,
         'num_messages_pre': request.validated['num_messages_pre'],
         'num_messages_post': request.validated['num_messages_post']
     }
@@ -78,7 +83,7 @@ def validate_post_request(request):
 
 
 def validate_delete_request(request):
-    data = json.loads(request.body)
+    data = {'uuid': request.GET.get('uuid', None)}
     validate_required_field(request, data, 'uuid')
 
 
@@ -95,12 +100,13 @@ def post_profiles(request):
             if title:
                 profile.title = title
             if send_days:
-                profile.send_days = send_days
+                profile.send_days = ', '.join(
+                    [str(x) for x in send_days])
             if num_messages_pre:
                 profile.num_messages_pre = num_messages_pre
             if num_messages_post:
                 profile.num_messages_post = num_messages_post
-        return {'success': True}
+            return profile.to_dict()
     except DBAPIError:
         request.errors.add('Could not connect to the database.')
 

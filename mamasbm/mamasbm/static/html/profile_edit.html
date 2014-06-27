@@ -1,12 +1,25 @@
 <div class="row">
-    <h1>Messaging Profiles</h1>
+    <h2>Messaging Profiles</h2>
     <div class="panel panel-primary span4">
     <div class="panel-body">
-        <h4>{{profile.title}}</h4>
-        <div>When do messages get sent? <span class="label label-success">{{profile.send_days}}</span></div>
-        <div>How many messages during pregnancy? <span class="label label-success">{{profile.num_messages_pre}}</span></div>
-        <div>How many messages after birth? <span class="label label-success">{{profile.num_messages_post}}</span></div>
-        <p><a href="#/profiles">Back</a></p>
+        <form novalidate class="simple-form">
+            <input type="text" ng-model="profile.title" /><br />
+            When do messages get sent?
+            <select class="dropdown" data-placeholder="Select Send Days"
+              ng-model="profile.send_days" ng-options="item.id as item.name for item in send_days"
+              multiple="multiple" multiselect-dropdown >
+            </select><br/>
+            How many messages during pregnancy? <input type="number" ng-model="profile.num_messages_pre" /><br />
+            How many messages after birth? <input type="number" ng-model="profile.num_messages_post" /><br />
+            <div ng-if="profile.uuid">
+                <button class="btn btn-success btn-sm" ng-click="save(profile)">SAVE</button>
+            </div>
+            <div ng-if="!profile.uuid">
+                <button class="btn btn-primary btn-sm" ng-click="add(profile)">ADD</button>
+            </div>
+        </form>
+        <pre>{{profile | json}}</pre>
+        <p><br/><a href="#/profiles">Back</a></p>
     </div>
     </div>
 </div>
