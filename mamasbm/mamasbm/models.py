@@ -76,5 +76,6 @@ class MessageProfile(Base):
 class Message(Base):
     __tablename__ = 'messages'
     uuid = Column('uuid', UUID(), primary_key=True, default=uuid.uuid4)
+    message_profile_id = Column(Integer, ForeignKey('message_profiles.uuid'))
     week = Column(Integer)
     text = Column(Text)
