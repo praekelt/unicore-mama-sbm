@@ -1,8 +1,8 @@
 import uuid
 
-from sqlalchemy import Column, Index, Integer, Text, types
+from sqlalchemy import Column, Index, Integer, Text, types, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
