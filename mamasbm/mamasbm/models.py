@@ -53,6 +53,7 @@ class Profile(Base):
     num_messages_pre = Column(Integer)
     num_messages_post = Column(Integer)
     send_days = Column(Text)
+    message_profiles = relationship("MessageProfile", backref="profile")
 
     def to_dict(self):
         return {
@@ -62,3 +63,18 @@ class Profile(Base):
             'num_messages_post': self.num_messages_post,
             'send_days': [int(d) for d in self.send_days.split(',')],
         }
+
+
+class MessageProfile(Base):
+    __tablename__ = 'message_profiles'
+    uuid = Column('uuid', UUID(), primary_key=True, default=uuid.uuid4)
+    name = Column(Text)
+    profile_id = Column(Integer, ForeignKey('profile.uuid'))
+    messages = relationship('Message', backref='translation')
+
+
+class Message(Base):
+    __tablename__ = 'messages'
+    uuid = Column('uuid', UUID(), primary_key=True, default=uuid.uuid4)
+    week = Column(Integer)
+    text = Column(Text)
