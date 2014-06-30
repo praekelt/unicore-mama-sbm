@@ -17,9 +17,6 @@ class CsvImporter(object):
                 if any([column for column in row]):
                     yield row
 
-    def import_csv(self, file_path):
-        return self.build_messages(self.read_rows_from_csv_file(file_path))
-
     def build_messages(self, rows):
         days = dict()
 
@@ -31,7 +28,8 @@ class CsvImporter(object):
             if not days.get(current_day):
                 days[current_day] = dict()
 
-            while current_day <= self.num_days - 1 and days.get(current_day).get(week):
+            while current_day <= self.num_days - 1 and days.get(
+                    current_day).get(week):
                 current_day += 1
                 if not days.get(current_day):
                     days[current_day] = dict()
@@ -44,3 +42,6 @@ class CsvImporter(object):
                 days.get(current_day)[week] += ' ' + text
 
         return days
+
+    def import_csv(self, file_path):
+        return self.build_messages(self.read_rows_from_csv_file(file_path))

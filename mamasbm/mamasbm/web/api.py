@@ -1,4 +1,5 @@
 import transaction
+from tempfile import NamedTemporaryFile
 
 from cornice import Service
 from sqlalchemy.exc import DBAPIError, StatementError
@@ -11,6 +12,12 @@ profiles = Service(
     name='profiles',
     path='/web/api/profiles.json',
     description="Manages stage based messaging profiles"
+)
+
+message_profiles = Service(
+    name='message_profiles',
+    path='/web/api/message_profiles.json',
+    description="Manages messaging profiles"
 )
 
 
@@ -77,6 +84,27 @@ def delete_profile(request):
         with transaction.manager:
             profile = DBSession.query(Profile).get(uuid)
             DBSession.delete(profile)
+        return {'success': True}
+    except DBAPIError:
+        request.errors.add('Could not connect to the database.')
+
+
+@message_profiles.post(validators=validators.validate_upload_message_profiles)
+def upload_message_profiles(request):
+    def handle_uploaded_file(f):
+        temp = NamedTemporaryFile(delete=False)
+        with open(temp.name, 'wb+') as destination:
+            for chunk in f.chunks():
+                destination.write(chunk)
+        return temp.name
+
+    profile_uuid = request.validated['profile_uuid']
+    name = request.validated['name']
+    input_file = request.validated['csv'].file
+    temp_file = handle_uploaded_file(input_file)
+
+    try:
+        factory.build_message_profiles(name, temp_file, profile_uuid)
         return {'success': True}
     except DBAPIError:
         request.errors.add('Could not connect to the database.')

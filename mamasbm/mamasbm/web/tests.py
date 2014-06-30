@@ -1,5 +1,6 @@
 import os
 import transaction
+from StringIO import StringIO
 
 from mamasbm import main
 from pyramid import testing
@@ -7,6 +8,7 @@ from unittest import TestCase
 from webtest import TestApp
 from mamasbm.models import DBSession, Base, Profile
 from mamasbm.web.csv_handler import CsvImporter
+from mamasbm.web import factory
 
 
 class TestProfilesView(TestCase):
@@ -197,3 +199,31 @@ class TestProfilesView(TestCase):
         self.assertEquals(len(days.items()), 2)
         self.assertEquals(len(days[0].items()), 36)
         self.assertEquals(len(days[1].items()), 36)
+
+    def test_message_profile_factory(self):
+        data = {
+            'title': 'Mama basic',
+            'send_days': [1, 4],
+        }
+        resp = self.app.put_json('/web/api/profiles.json', data, status=200)
+        self.assertTrue(resp.json['success'])
+
+        resp = self.app.get('/web/api/profiles.json', status=200)
+        self.assertEquals(len(resp.json), 1)
+        self.assertEquals(resp.json[0]['title'], 'Mama basic')
+        sample_file = os.path.join(
+            os.path.dirname(__file__), "sample/english_pregnant.csv")
+
+        profile_uuid = resp.json[0]['uuid'],
+        factory.build_message_profiles('English', sample_file, profile_uuid)
+
+        resp = self.app.get('/web/api/profiles.json', status=200)
+        self.assertEquals(len(resp.json), 1)
+        self.assertEquals(resp.json[0]['title'], 'Mama basic')
+        self.assertEquals(resp.json[0]['send_days'], [1, 4])
+        self.assertEquals(
+            resp.json[0]['message_profiles'][0]['name'],
+            'English - Monday')
+        self.assertEquals(
+            len(resp.json[0]['message_profiles'][0]['messages']),
+            36)
