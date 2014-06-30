@@ -1,28 +1,17 @@
-import json
 import transaction
 
 from cornice import Service
 from sqlalchemy.exc import DBAPIError, StatementError
 
 from mamasbm.models import DBSession, Profile
+from mamasbm.web import validators
+
 
 profiles = Service(
     name='profiles',
     path='/web/api/profiles.json',
     description="Manages stage based messaging profiles"
 )
-
-
-def update_validated_field(request, data, key):
-    if key in data and data[key]:
-        request.validated[key] = data[key]
-
-
-def validate_required_field(request, data, key):
-    if key not in data or not data[key]:
-        request.errors.add('body', key, '%s is a required field.' % key)
-    else:
-        update_validated_field(request, data, key)
 
 
 @profiles.get()
@@ -39,18 +28,13 @@ def get_profiles(request):
         qs = DBSession.query(Profile).all()
         return [p.to_dict() for p in qs]
     except DBAPIError:
-        request.errors.add('db', 'DBAPIError', 'Could not connect to the database.')
+        request.errors.add(
+            'db', 'DBAPIError', 'Could not connect to the database.')
     except StatementError:
         request.errors.add('db', 'ValueError', 'uuid is not valid.')
 
 
-def validate_put_request(request):
-    data = json.loads(request.body)
-    validate_required_field(request, data, 'title')
-    validate_required_field(request, data, 'send_days')
-
-
-@profiles.put(validators=validate_put_request)
+@profiles.put(validators=validators.validate_put_request)
 def put_profiles(request):
     send_days = ', '.join(
         [str(x) for x in request.validated['send_days']])
@@ -68,20 +52,7 @@ def put_profiles(request):
         request.errors.add('Could not connect to the database.')
 
 
-def validate_post_request(request):
-    data = json.loads(request.body)
-    validate_required_field(request, data, 'uuid')
-
-    update_validated_field(request, data, 'title')
-    update_validated_field(request, data, 'send_days')
-
-
-def validate_delete_request(request):
-    data = {'uuid': request.GET.get('uuid', None)}
-    validate_required_field(request, data, 'uuid')
-
-
-@profiles.post(validators=validate_post_request)
+@profiles.post(validators=validators.validate_post_request)
 def post_profiles(request):
     uuid = request.validated['uuid']
     title = request.validated.get('title')
@@ -99,7 +70,7 @@ def post_profiles(request):
         request.errors.add('Could not connect to the database.')
 
 
-@profiles.delete(validators=validate_delete_request)
+@profiles.delete(validators=validators.validate_delete_request)
 def delete_profile(request):
     uuid = request.validated['uuid']
     try:
