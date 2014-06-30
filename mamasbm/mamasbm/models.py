@@ -69,7 +69,7 @@ class MessageProfile(Base):
     __tablename__ = 'message_profiles'
     uuid = Column('uuid', UUID(), primary_key=True, default=uuid.uuid4)
     name = Column(Text)
-    profile_id = Column(Integer, ForeignKey('profile.uuid'))
+    profile_id = Column(Integer, ForeignKey('profiles.uuid'))
     messages = relationship('Message', backref='translation')
 
 
