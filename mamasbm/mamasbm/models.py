@@ -50,8 +50,6 @@ class Profile(Base):
     __tablename__ = 'profiles'
     uuid = Column('uuid', UUID(), primary_key=True, default=uuid.uuid4)
     title = Column(Text)
-    num_messages_pre = Column(Integer)
-    num_messages_post = Column(Integer)
     send_days = Column(Text)
     message_profiles = relationship("MessageProfile", backref="profile")
 
@@ -59,8 +57,6 @@ class Profile(Base):
         return {
             'uuid': str(self.uuid),
             'title': self.title,
-            'num_messages_pre': self.num_messages_pre,
-            'num_messages_post': self.num_messages_post,
             'send_days': [int(d) for d in self.send_days.split(',')],
         }
 

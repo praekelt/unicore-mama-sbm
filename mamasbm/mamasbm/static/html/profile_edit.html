@@ -9,8 +9,6 @@
               ng-model="profile.send_days" ng-options="item.id as item.name for item in send_days"
               multiple="multiple" multiselect-dropdown >
             </select><br/>
-            How many messages during pregnancy? <input type="number" ng-model="profile.num_messages_pre" /><br />
-            How many messages after birth? <input type="number" ng-model="profile.num_messages_post" /><br />
             <div ng-if="profile.uuid">
                 <button class="btn btn-success btn-sm" ng-click="save(profile)">SAVE</button>
             </div>

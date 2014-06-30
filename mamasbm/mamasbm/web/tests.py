@@ -26,8 +26,6 @@ class TestProfilesView(TestCase):
             model = Profile(
                 title='Mama basic',
                 send_days='1, 4',
-                num_messages_pre=36,
-                num_messages_post=52
             )
             DBSession.add(model)
         resp = self.app.get('/web/api/profiles.json', status=200)
@@ -38,8 +36,6 @@ class TestProfilesView(TestCase):
         payload = {
             'title': 'Mama basic',
             'send_days': [1, 4],
-            'num_messages_pre': 36,
-            'num_messages_post': 52
         }
         resp = self.app.put_json('/web/api/profiles.json', payload, status=200)
         self.assertTrue(resp.json['success'])
@@ -52,8 +48,6 @@ class TestProfilesView(TestCase):
         payload = {
             'title': 'Mama basic',
             'send_days': [1, 4],
-            'num_messages_pre': 36,
-            'num_messages_post': 52
         }
         resp = self.app.put_json('/web/api/profiles.json', payload, status=200)
         self.assertTrue(resp.json['success'])
@@ -72,8 +66,6 @@ class TestProfilesView(TestCase):
         payload = {
             'title': 'Mama basic',
             'send_days': '1,4',
-            'num_messages_pre': 36,
-            'num_messages_post': 52
         }
         resp = self.app.put_json('/web/api/profiles.json', payload, status=200)
         self.assertTrue(resp.json['success'])
@@ -96,14 +88,6 @@ class TestProfilesView(TestCase):
             resp.json['errors'][1]['description'],
             'send_days is a required field.'
         )
-        self.assertEquals(
-            resp.json['errors'][2]['description'],
-            'num_messages_pre is a required field.'
-        )
-        self.assertEquals(
-            resp.json['errors'][3]['description'],
-            'num_messages_post is a required field.'
-        )
 
         resp = self.app.get('/web/api/profiles.json', status=200)
         self.assertEquals(len(resp.json), 0)
@@ -111,8 +95,6 @@ class TestProfilesView(TestCase):
     def test_put_profiles_title_missing_required_field(self):
         payload = {
             'send_days': '1,4',
-            'num_messages_pre': 36,
-            'num_messages_post': 52
         }
         resp = self.app.put_json('/web/api/profiles.json', payload, status=400)
         self.assertEquals(resp.json['status'], 'error')
@@ -130,8 +112,6 @@ class TestProfilesView(TestCase):
         data = {
             'title': 'Mama basic',
             'send_days': [1, 4],
-            'num_messages_pre': 36,
-            'num_messages_post': 52
         }
         resp = self.app.put_json('/web/api/profiles.json', data, status=200)
         self.assertTrue(resp.json['success'])
@@ -154,8 +134,6 @@ class TestProfilesView(TestCase):
         data = {
             'title': 'Mama basic',
             'send_days': [1, 4],
-            'num_messages_pre': 36,
-            'num_messages_post': 52
         }
         resp = self.app.put_json('/web/api/profiles.json', data, status=200)
         self.assertTrue(resp.json['success'])
@@ -166,8 +144,6 @@ class TestProfilesView(TestCase):
         data = {
             'title': 'Mama basic new',
             'send_days': [1, 7],
-            'num_messages_pre': 36,
-            'num_messages_post': 60,
             'uuid': resp.json[0]['uuid']
         }
 
@@ -177,15 +153,11 @@ class TestProfilesView(TestCase):
         self.assertEquals(len(resp.json), 1)
         self.assertEquals(resp.json[0]['title'], 'Mama basic new')
         self.assertEquals(resp.json[0]['send_days'], [1, 7])
-        self.assertEquals(resp.json[0]['num_messages_pre'], 36)
-        self.assertEquals(resp.json[0]['num_messages_post'], 60)
 
     def test_delete_profile(self):
         data = {
             'title': 'Mama basic',
             'send_days': [1, 4],
-            'num_messages_pre': 36,
-            'num_messages_post': 52
         }
         resp = self.app.put_json('/web/api/profiles.json', data, status=200)
         self.assertTrue(resp.json['success'])
