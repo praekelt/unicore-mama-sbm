@@ -1,3 +1,4 @@
+import os
 import transaction
 
 from mamasbm import main
@@ -5,6 +6,7 @@ from pyramid import testing
 from unittest import TestCase
 from webtest import TestApp
 from mamasbm.models import DBSession, Base, Profile
+from mamasbm.web.csv_handler import CsvImporter
 
 
 class TestProfilesView(TestCase):
@@ -186,3 +188,12 @@ class TestProfilesView(TestCase):
             resp.json['errors'][0]['description'],
             'Could not connect to the database.'
         )
+
+    def test_message_profile_csv_import(self):
+        importer = CsvImporter(2)
+        sample_file = os.path.join(
+            os.path.dirname(__file__), "sample/english_pregnant.csv")
+        days = importer.import_csv(sample_file)
+        self.assertEquals(len(days.items()), 2)
+        self.assertEquals(len(days[0].items()), 36)
+        self.assertEquals(len(days[1].items()), 36)
