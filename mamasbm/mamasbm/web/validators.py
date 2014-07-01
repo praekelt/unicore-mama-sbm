@@ -2,15 +2,15 @@ import json
 
 
 def update_validated_field(request, data, key):
-    if key in data and data[key]:
+    if key in data and data[key] is not None:
         request.validated[key] = data[key]
 
 
 def validate_required_field(request, data, key):
-    if key not in data or not data[key]:
-        request.errors.add('body', key, '%s is a required field.' % key)
-    else:
+    if key in data and data[key] is not None:
         update_validated_field(request, data, key)
+    else:
+        request.errors.add('body', key, '%s is a required field.' % key)
 
 
 def validate_put_request(request):
@@ -33,7 +33,6 @@ def validate_delete_request(request):
 
 
 def validate_upload_message_profiles(request):
-    data = json.loads(request.body)
-    validate_required_field(request, data, 'profile_uuid')
-    validate_required_field(request, data, 'name')
-    validate_required_field(request, data, 'csv')
+    validate_required_field(request, request.POST, 'profile_uuid')
+    validate_required_field(request, request.POST, 'name')
+    validate_required_field(request, request.POST, 'csv')

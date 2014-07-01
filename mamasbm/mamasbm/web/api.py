@@ -2,10 +2,11 @@ import transaction
 from tempfile import NamedTemporaryFile
 
 from cornice import Service
+from pyramid.httpexceptions import HTTPFound
 from sqlalchemy.exc import DBAPIError, StatementError
 
 from mamasbm.models import DBSession, Profile
-from mamasbm.web import validators
+from mamasbm.web import validators, factory
 
 
 profiles = Service(
@@ -94,8 +95,7 @@ def upload_message_profiles(request):
     def handle_uploaded_file(f):
         temp = NamedTemporaryFile(delete=False)
         with open(temp.name, 'wb+') as destination:
-            for chunk in f.chunks():
-                destination.write(chunk)
+            destination.write(f.read())
         return temp.name
 
     profile_uuid = request.validated['profile_uuid']
@@ -105,6 +105,8 @@ def upload_message_profiles(request):
 
     try:
         factory.build_message_profiles(name, temp_file, profile_uuid)
-        return {'success': True}
+        url = request.route_url('admin_profiles')
+        params = {'url': url, 'profile_id': profile_uuid}
+        return HTTPFound(location='%(url)s#/profiles/%(profile_id)s' % params)
     except DBAPIError:
         request.errors.add('Could not connect to the database.')
