@@ -1,8 +1,12 @@
 import uuid
+import calendar
+import transaction
 
-from sqlalchemy import Column, Index, Integer, Text, types
+from mamasbm.web.csv_handler import CsvImporter
+
+from sqlalchemy import Column, Index, Integer, Text, types, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
@@ -50,15 +54,48 @@ class Profile(Base):
     __tablename__ = 'profiles'
     uuid = Column('uuid', UUID(), primary_key=True, default=uuid.uuid4)
     title = Column(Text)
-    num_messages_pre = Column(Integer)
-    num_messages_post = Column(Integer)
     send_days = Column(Text)
+    message_profiles = relationship("MessageProfile", backref="profile")
+
+    def get_send_days(self):
+        return [int(d) for d in self.send_days.split(',') if d]
 
     def to_dict(self):
         return {
             'uuid': str(self.uuid),
             'title': self.title,
-            'num_messages_pre': self.num_messages_pre,
-            'num_messages_post': self.num_messages_post,
-            'send_days': [int(d) for d in self.send_days.split(',')],
+            'send_days': self.get_send_days(),
+            'message_profiles': [m.to_dict() for m in self.message_profiles]
+        }
+
+
+class MessageProfile(Base):
+    __tablename__ = 'message_profiles'
+    uuid = Column('uuid', UUID(), primary_key=True, default=uuid.uuid4)
+    name = Column(Text)
+    profile_id = Column(UUID, ForeignKey('profiles.uuid'))
+    messages = relationship('Message', backref='message_profile')
+
+    def to_dict(self):
+        return {
+            'uuid': str(self.uuid),
+            'profile_id': str(self.profile_id),
+            'name': self.name,
+            'messages': [m.to_dict() for m in self.messages]
+        }
+
+
+class Message(Base):
+    __tablename__ = 'messages'
+    uuid = Column('uuid', UUID(), primary_key=True, default=uuid.uuid4)
+    message_profile_id = Column(UUID, ForeignKey('message_profiles.uuid'))
+    week = Column(Integer)
+    text = Column(Text)
+
+    def to_dict(self):
+        return {
+            'uuid': str(self.uuid),
+            'message_profile_id': str(self.message_profile_id),
+            'week': self.week,
+            'text': self.text
         }

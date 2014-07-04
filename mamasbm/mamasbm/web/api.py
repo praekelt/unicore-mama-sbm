@@ -1,10 +1,13 @@
-import json
 import transaction
+from tempfile import NamedTemporaryFile
 
 from cornice import Service
+from pyramid.httpexceptions import HTTPFound
 from sqlalchemy.exc import DBAPIError, StatementError
 
-from mamasbm.models import DBSession, Profile
+from mamasbm.models import DBSession, Profile, MessageProfile
+from mamasbm.web import validators, factory
+
 
 profiles = Service(
     name='profiles',
@@ -12,17 +15,11 @@ profiles = Service(
     description="Manages stage based messaging profiles"
 )
 
-
-def update_validated_field(request, data, key):
-    if key in data and data[key]:
-        request.validated[key] = data[key]
-
-
-def validate_required_field(request, data, key):
-    if key not in data or not data[key]:
-        request.errors.add('body', key, '%s is a required field.' % key)
-    else:
-        update_validated_field(request, data, key)
+message_profiles = Service(
+    name='message_profiles',
+    path='/web/api/message_profiles.json',
+    description="Manages messaging profiles"
+)
 
 
 @profiles.get()
@@ -39,20 +36,13 @@ def get_profiles(request):
         qs = DBSession.query(Profile).all()
         return [p.to_dict() for p in qs]
     except DBAPIError:
-        request.errors.add('db', 'DBAPIError', 'Could not connect to the database.')
+        request.errors.add(
+            'db', 'DBAPIError', 'Could not connect to the database.')
     except StatementError:
         request.errors.add('db', 'ValueError', 'uuid is not valid.')
 
 
-def validate_put_request(request):
-    data = json.loads(request.body)
-    validate_required_field(request, data, 'title')
-    validate_required_field(request, data, 'send_days')
-    validate_required_field(request, data, 'num_messages_pre')
-    validate_required_field(request, data, 'num_messages_post')
-
-
-@profiles.put(validators=validate_put_request)
+@profiles.put(validators=validators.validate_put_request)
 def put_profiles(request):
     send_days = ', '.join(
         [str(x) for x in request.validated['send_days']])
@@ -60,8 +50,6 @@ def put_profiles(request):
     post_data = {
         'title': request.validated['title'],
         'send_days': send_days,
-        'num_messages_pre': request.validated['num_messages_pre'],
-        'num_messages_post': request.validated['num_messages_post']
     }
     try:
         with transaction.manager:
@@ -72,28 +60,11 @@ def put_profiles(request):
         request.errors.add('Could not connect to the database.')
 
 
-def validate_post_request(request):
-    data = json.loads(request.body)
-    validate_required_field(request, data, 'uuid')
-
-    update_validated_field(request, data, 'title')
-    update_validated_field(request, data, 'send_days')
-    update_validated_field(request, data, 'num_messages_pre')
-    update_validated_field(request, data, 'num_messages_post')
-
-
-def validate_delete_request(request):
-    data = {'uuid': request.GET.get('uuid', None)}
-    validate_required_field(request, data, 'uuid')
-
-
-@profiles.post(validators=validate_post_request)
+@profiles.post(validators=validators.validate_post_request)
 def post_profiles(request):
     uuid = request.validated['uuid']
     title = request.validated.get('title')
     send_days = request.validated.get('send_days')
-    num_messages_pre = request.validated.get('num_messages_pre')
-    num_messages_post = request.validated.get('num_messages_post')
     try:
         with transaction.manager:
             profile = DBSession.query(Profile).get(uuid)
@@ -102,22 +73,52 @@ def post_profiles(request):
             if send_days:
                 profile.send_days = ', '.join(
                     [str(x) for x in send_days])
-            if num_messages_pre:
-                profile.num_messages_pre = num_messages_pre
-            if num_messages_post:
-                profile.num_messages_post = num_messages_post
             return profile.to_dict()
     except DBAPIError:
         request.errors.add('Could not connect to the database.')
 
 
-@profiles.delete(validators=validate_delete_request)
+@profiles.delete(validators=validators.validate_delete_request)
 def delete_profile(request):
     uuid = request.validated['uuid']
     try:
         with transaction.manager:
             profile = DBSession.query(Profile).get(uuid)
             DBSession.delete(profile)
+        return {'success': True}
+    except DBAPIError:
+        request.errors.add('Could not connect to the database.')
+
+
+@message_profiles.post(validators=validators.validate_upload_message_profiles)
+def upload_message_profiles(request):
+    def handle_uploaded_file(f):
+        temp = NamedTemporaryFile(delete=False)
+        with open(temp.name, 'wb+') as destination:
+            destination.write(f.read())
+        return temp.name
+
+    profile_uuid = request.validated['profile_uuid']
+    name = request.validated['name']
+    input_file = request.validated['csv'].file
+    temp_file = handle_uploaded_file(input_file)
+
+    try:
+        factory.build_message_profiles(name, temp_file, profile_uuid)
+        url = request.route_url('admin_profiles')
+        params = {'url': url, 'profile_id': profile_uuid}
+        return HTTPFound(location='%(url)s#/profiles/%(profile_id)s' % params)
+    except DBAPIError:
+        request.errors.add('Could not connect to the database.')
+
+
+@message_profiles.delete(validators=validators.validate_delete_request)
+def delete_message_profile(request):
+    uuid = request.validated['uuid']
+    try:
+        with transaction.manager:
+            msg_profile = DBSession.query(MessageProfile).get(uuid)
+            DBSession.delete(msg_profile)
         return {'success': True}
     except DBAPIError:
         request.errors.add('Could not connect to the database.')
