@@ -5,7 +5,7 @@ from cornice import Service
 from pyramid.httpexceptions import HTTPFound
 from sqlalchemy.exc import DBAPIError, StatementError
 
-from mamasbm.models import DBSession, Profile
+from mamasbm.models import DBSession, Profile, MessageProfile
 from mamasbm.web import validators, factory
 
 
@@ -108,5 +108,17 @@ def upload_message_profiles(request):
         url = request.route_url('admin_profiles')
         params = {'url': url, 'profile_id': profile_uuid}
         return HTTPFound(location='%(url)s#/profiles/%(profile_id)s' % params)
+    except DBAPIError:
+        request.errors.add('Could not connect to the database.')
+
+
+@message_profiles.delete(validators=validators.validate_delete_request)
+def delete_message_profile(request):
+    uuid = request.validated['uuid']
+    try:
+        with transaction.manager:
+            msg_profile = DBSession.query(MessageProfile).get(uuid)
+            DBSession.delete(msg_profile)
+        return {'success': True}
     except DBAPIError:
         request.errors.add('Could not connect to the database.')

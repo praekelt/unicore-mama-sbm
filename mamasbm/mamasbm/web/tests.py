@@ -227,3 +227,34 @@ class TestProfilesView(TestCase):
         self.assertEquals(
             len(resp.json[0]['message_profiles'][0]['messages']),
             36)
+
+    def test_delete_message_profile(self):
+        data = {
+            'title': 'Mama basic',
+            'send_days': [1, 4],
+        }
+        resp = self.app.put_json('/web/api/profiles.json', data, status=200)
+        self.assertTrue(resp.json['success'])
+
+        sample_file = os.path.join(
+            os.path.dirname(__file__), "sample/english_pregnant.csv")
+
+        resp = self.app.get('/web/api/profiles.json', status=200)
+        profile_uuid = resp.json[0]['uuid'],
+        factory.build_message_profiles('English', sample_file, profile_uuid)
+
+        resp = self.app.get('/web/api/profiles.json', status=200)
+        self.assertEquals(len(resp.json), 1)
+        self.assertEquals(resp.json[0]['title'], 'Mama basic')
+        self.assertEquals(len(resp.json[0]['message_profiles']), 2)
+
+        data = {
+            'uuid': resp.json[0]['message_profiles'][0]['uuid'],
+        }
+
+        resp = self.app.delete(
+            '/web/api/message_profiles.json?uuid=%(uuid)s' % data, status=200)
+        self.assertTrue(resp.json['success'])
+
+        resp = self.app.get('/web/api/profiles.json', status=200)
+        self.assertEquals(len(resp.json[0]['message_profiles']), 1)
