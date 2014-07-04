@@ -4,13 +4,16 @@
     <div class="panel-body">
         <form novalidate class="simple-form">
             <input type="text" class="form-control" ng-model="profile.title" /><br />
-            When do messages get sent?
+            <b>When do messages get sent?</b><br/>
             <select class="dropdown" data-placeholder="Select Send Days"
               ng-model="profile.send_days" ng-options="item.id as item.name for item in send_days"
               multiple="multiple" multiselect-dropdown >
-            </select><br/>
-            Messages currently assigned to this profile?<br/>
-            <div ng-repeat="msg_profile in profile.message_profiles">{{msg_profile.name}} ({{msg_profile.messages.length }})</div><br/>
+            </select><br/><br/>
+            <b>Messages currently assigned to this profile?</b><br/>
+            <div ng-repeat="msg_profile in profile.message_profiles">
+                {{msg_profile.name}} ({{msg_profile.messages.length }})
+                <button class="btn btn-danger btn-xs" ng-click="remove_message_profile(profile, msg_profile)"><i class="glyphicon glyphicon-remove"></i></button>
+            </div><br/>
             <div ng-if="profile.uuid">
                 <button class="btn btn-success btn-sm" ng-click="save(profile)">SAVE</button>
             </div>
@@ -19,13 +22,18 @@
             </div>
         </form><br/>
         <form novalidate class="simple-form" action="/web/api/message_profiles.json" method="POST" enctype="multipart/form-data">
+            <fieldset>
+                <legend>Upload messages</legend>
             What's the name of this messaging profile? <input type="text" name="name" />
             <input type="file" name="csv" /><br />
             <input type="hidden" name="profile_uuid" value="{{profile.uuid}}" />
             <input type="submit" value="submit" class="btn btn-primary btn-sm"/>
+            </fieldset>
         </form>
+        <!-- Debug view
         <br/>
         <pre>{{profile | json}}</pre>
+        -->
         <p><br/><a href="#/profiles">Back</a></p>
     </div>
     </div>
