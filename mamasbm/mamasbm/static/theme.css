@@ -67,14 +67,13 @@ form input.ng-valid.ng-dirty {
 }
 .starter-template .content h1 .smaller {
   font-size: 40px;
-  color: #f2b7bd;
 }
 .starter-template .content .lead {
   font-size: 25px;
-  color: #f2b7bd;
+  color: #C00;
 }
 .starter-template .content .lead .font-normal {
-  color: #ffffff;
+  color: #D00;
 }
 .starter-template .links {
   float: right;
@@ -98,26 +97,26 @@ form input.ng-valid.ng-dirty {
   margin-right: 0;
 }
 .starter-template .links ul li.current-version {
-  color: #f2b7bd;
+  color: #c00;
   font-weight: 400;
 }
 .starter-template .links ul li a {
-  color: #ffffff;
+  color: #c00;
 }
 .starter-template .links ul li a:hover {
   text-decoration: underline;
 }
 .starter-template .links ul li .icon-muted {
-  color: #eb8b95;
+  color: #c00;
   margin-right: 5px;
 }
 .starter-template .links ul li:hover .icon-muted {
-  color: #ffffff;
+  color: #f2b7bd;
 }
 .starter-template .copyright {
   margin-top: 10px;
   font-size: 0.9em;
-  color: #f2b7bd;
+  color: #c00;
   text-transform: lowercase;
   float: right;
   right: 0;
