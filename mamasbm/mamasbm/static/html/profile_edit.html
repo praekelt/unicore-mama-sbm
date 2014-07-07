@@ -1,5 +1,11 @@
 <div class="row">
     <h2>Messaging Profiles</h2>
+    <ol class="breadcrumb">
+        <li><a href="/admin/">Admin</a></li>
+        <li><a href="#/profiles">Profiles</a></li>
+        <li ng-if="profile.uuid">edit</li>
+        <li ng-if="!profile.uuid">add</li>
+    </ol>
     <div class="panel panel-primary span4">
     <div class="panel-body">
         <form novalidate class="simple-form">
