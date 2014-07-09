@@ -28,7 +28,7 @@ def upgrade():
         'message_profiles',
         sa.Column('uuid', UUID(), nullable=False),
         sa.Column('name', sa.Text(), nullable=True),
-        sa.Column('profile_id', sa.Integer(), nullable=True),
+        sa.Column('profile_id', UUID(), nullable=True),
         sa.ForeignKeyConstraint(['profile_id'], ['profiles.uuid'], ),
         sa.PrimaryKeyConstraint('uuid')
     )

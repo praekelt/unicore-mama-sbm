@@ -4,7 +4,9 @@ python:
 install:
   - "pip install coveralls coverage --use-wheel"
   - "pip install -r requirements.pip --use-wheel"
+before_script:
+  - psql -c 'create database mamasbm_test;' -U postgres
 script:
-  - coverage run --source=mamasbm mamasbm/setup.py test
+  - MAMASBM_TEST_CONNECTION_STRING='postgresql://postgres@localhost:5432/mamasbm_test' coverage run --source=mamasbm mamasbm/setup.py test
 after_success:
   - coveralls

@@ -10,4 +10,5 @@ waitress
 alembic
 webtest
 cornice
+psycopg2
 -e mamasbm

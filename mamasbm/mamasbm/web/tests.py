@@ -1,11 +1,11 @@
 import os
 import transaction
-from StringIO import StringIO
 
-from mamasbm import main
 from pyramid import testing
 from unittest import TestCase
 from webtest import TestApp
+
+from mamasbm import main
 from mamasbm.models import DBSession, Base, Profile
 from mamasbm.web.csv_handler import CsvImporter
 from mamasbm.web import factory
@@ -14,12 +14,15 @@ from mamasbm.web import factory
 class TestProfilesView(TestCase):
     def setUp(self):
         self.config = testing.setUp()
-        self.app = TestApp(main({}, **{'sqlalchemy.url': 'sqlite://'}))
+        connection_string = os.environ.get(
+            "MAMASBM_TEST_CONNECTION_STRING", "sqlite://")
+        self.app = TestApp(main({}, **{'sqlalchemy.url': connection_string}))
         Base.metadata.create_all()
 
     def tearDown(self):
         DBSession.remove()
         testing.tearDown()
+        Base.metadata.drop_all()
 
     def test_get_profiles_empty(self):
         resp = self.app.get('/web/api/profiles.json', status=200)
