@@ -20,9 +20,7 @@ RUN cp run.sh /
 RUN virtualenv ve
 RUN ve/bin/pip install -r requirements.pip
 
-# Run database migrations
 WORKDIR /praekelt-unicore-mama-sbm/mamasbm
-RUN ../ve/bin/alembic upgrade head
 
 # Expose ports
 EXPOSE 8000
