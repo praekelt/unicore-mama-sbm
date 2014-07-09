@@ -8,7 +8,7 @@ MAINTAINER Preakelt Foundation dev@praekelt.com
 RUN apt-get update
 
 # Install Python and Basic Python Tools
-RUN apt-get install --no-install-recommends -y curl tar python python-dev python-distribute python-pip python-virtualenv postgresql-client
+RUN apt-get install --no-install-recommends -y curl tar python python-dev python-distribute python-pip python-virtualenv postgresql-client libpq-dev
 RUN apt-get remove -y perl --auto-remove
 
 # Copy the application folder inside the container
