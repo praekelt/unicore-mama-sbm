@@ -226,7 +226,10 @@ class TestProfilesView(TestCase):
         self.assertEquals(resp.json[0]['send_days'], [1, 4])
         self.assertEquals(
             resp.json[0]['message_profiles'][0]['name'],
-            'English - Monday')
+            'English - Tuesday')
+        self.assertEquals(
+            resp.json[0]['message_profiles'][1]['name'],
+            'English - Friday')
         self.assertEquals(resp.json[0]['message_profiles'][0]['send_day'], 1)
         self.assertEquals(resp.json[0]['message_profiles'][1]['send_day'], 4)
         self.assertEquals(

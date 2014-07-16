@@ -11,7 +11,7 @@ def build_message_profiles(name, temp_file, profile_uuid):
         send_days = profile.get_send_days()
         days = CsvImporter(num_days=len(send_days)).import_csv(temp_file)
         for k, v in days.items():
-            day_name = calendar.day_name[k]
+            day_name = calendar.day_name[send_days[k]]
             msg_profile = MessageProfile(name='%s - %s' % (name, day_name))
             msg_profile.send_day = send_days[k]
             messages = [
