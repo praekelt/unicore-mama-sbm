@@ -75,12 +75,14 @@ class MessageProfile(Base):
     name = Column(Text)
     profile_id = Column(UUID, ForeignKey('profiles.uuid'))
     messages = relationship('Message', backref='message_profile')
+    send_day = Column(Integer)
 
     def to_dict(self):
         return {
             'uuid': str(self.uuid),
             'profile_id': str(self.profile_id),
             'name': self.name,
+            'send_day': self.send_day,
             'messages': [m.to_dict() for m in self.messages]
         }
 
