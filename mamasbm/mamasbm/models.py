@@ -1,8 +1,4 @@
 import uuid
-import calendar
-import transaction
-
-from mamasbm.web.csv_handler import CsvImporter
 
 from sqlalchemy import Column, Index, Integer, Text, types, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
@@ -47,15 +43,14 @@ class MyModel(Base):
     name = Column(Text)
     value = Column(Integer)
 
-Index('my_index', MyModel.name, unique=True, mysql_length=255)
-
 
 class Profile(Base):
     __tablename__ = 'profiles'
     uuid = Column('uuid', UUID(), primary_key=True, default=uuid.uuid4)
     title = Column(Text)
     send_days = Column(Text)
-    message_profiles = relationship("MessageProfile", backref="profile")
+    message_profiles = relationship(
+        "MessageProfile", lazy="dynamic", backref="profile")
 
     def get_send_days(self):
         return [int(d) for d in self.send_days.split(',') if d]
@@ -74,7 +69,7 @@ class MessageProfile(Base):
     uuid = Column('uuid', UUID(), primary_key=True, default=uuid.uuid4)
     name = Column(Text)
     profile_id = Column(UUID, ForeignKey('profiles.uuid'))
-    messages = relationship('Message', backref='message_profile')
+    messages = relationship('Message', lazy="dynamic", backref='message_profile')
     send_day = Column(Integer)
 
     def to_dict(self):
@@ -85,6 +80,7 @@ class MessageProfile(Base):
             'send_day': self.send_day,
             'messages': [m.to_dict() for m in self.messages]
         }
+Index('message_profile_send_day_index', MessageProfile.send_day)
 
 
 class Message(Base):
