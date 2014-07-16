@@ -22,6 +22,7 @@ def main(global_config, **settings):
     config.add_route('admin', '/admin/')
     config.add_route('admin_profiles', '/admin/profiles/')
     config.add_notfound_view(views.not_found, append_slash=True)
+    config.scan("mamasbm.service.api")
     config.scan("mamasbm.web.api")
     config.scan("mamasbm.web.views")
     return config.make_wsgi_app()
