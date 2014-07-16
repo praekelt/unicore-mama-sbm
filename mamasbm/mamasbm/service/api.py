@@ -2,10 +2,9 @@ import transaction
 from tempfile import NamedTemporaryFile
 
 from cornice import Service
-from pyramid.httpexceptions import HTTPFound
 from sqlalchemy.exc import DBAPIError, StatementError
 
-from mamasbm.models import DBSession, Profile, MessageProfile
+from mamasbm.models import DBSession, Profile
 from mamasbm.service import validators
 
 
@@ -30,13 +29,17 @@ def get_message(request):
 
         msg_profile = profile.message_profiles.filter_by(send_day=day).first()
         if not msg_profile:
-            request.errors.add('request', 'day', 'This profile doesn\'t have messages for day %s.' % day)
+            request.errors.add(
+                'request', 'day',
+                'This profile doesn\'t have messages for day %s.' % day)
             return
 
         messages = msg_profile.messages.order_by('week')
         num_messages = messages.count()
         if not num_messages:
-            request.errors.add('request', '', 'No messages available for this profile')
+            request.errors.add(
+                'request', 'profile',
+                'No messages available for this profile')
             return
 
         if index >= num_messages:
