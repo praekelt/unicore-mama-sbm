@@ -111,3 +111,15 @@ class TestApi(TestCase):
         self.assertEqual(
             resp.json['errors'][0]['description'],
             'No messages available for this profile')
+
+    def test_required_fields(self):
+        resp = self.app.get('/api/message.json', status=400)
+        self.assertEqual(
+            resp.json['errors'][0]['description'],
+            'uuid is a required field.')
+        self.assertEqual(
+            resp.json['errors'][1]['description'],
+            'day is a required field.')
+        self.assertEqual(
+            resp.json['errors'][2]['description'],
+            'index is a required field.')
