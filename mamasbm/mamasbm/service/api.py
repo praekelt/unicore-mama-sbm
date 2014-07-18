@@ -1,5 +1,4 @@
-import transaction
-from tempfile import NamedTemporaryFile
+from datetime import date
 
 from cornice import Service
 from sqlalchemy.exc import DBAPIError, StatementError
@@ -15,11 +14,31 @@ message = Service(
 )
 
 
+#helper method to allow testing (mockable)
+def get_ref_date():
+    return date.today()
+
+
+def get_message_counter(index, date, max_weeks):
+    if index:
+        return int(index)
+
+    today = get_ref_date()
+
+    prenatal = True if today < date else False
+    print today, date, prenatal, max_weeks, (date - today).days / 7, (max_weeks - 1) - ((today - date).days / 7)
+    if prenatal:
+        return (date - today).days / 7
+    return (max_weeks - 1) - ((today - date).days / 7)
+
+
 @message.get(validators=validators.validate_get_message)
 def get_message(request):
     uuid = request.validated['uuid']
     day = int(request.validated['day'])
-    index = int(request.validated['index'])
+
+    index = request.validated.get('index')
+    date = request.validated.get('date')
 
     try:
         profile = DBSession.query(Profile).get(uuid)
@@ -42,11 +61,12 @@ def get_message(request):
                 'No messages available for this profile')
             return
 
-        if index >= num_messages:
+        msg_counter = get_message_counter(index, date, num_messages)
+        if msg_counter >= num_messages or msg_counter < 0:
             request.errors.add('request', 'index', 'Index out of bounds')
             return
 
-        return messages[index].to_dict()
+        return messages[msg_counter].to_dict()
     except DBAPIError:
         request.errors.add(
             'db', 'DBAPIError', 'Could not connect to the database.')

@@ -2,6 +2,8 @@ import os
 import transaction
 import uuid
 
+from datetime import date
+from mock import patch
 from pyramid import testing
 from unittest import TestCase
 from webtest import TestApp
@@ -9,6 +11,7 @@ from webtest import TestApp
 from mamasbm import main
 from mamasbm.models import DBSession, Base, Profile, MessageProfile
 from mamasbm.web import factory
+from mamasbm.service import api
 
 
 class TestApi(TestCase):
@@ -122,4 +125,27 @@ class TestApi(TestCase):
             'day is a required field.')
         self.assertEqual(
             resp.json['errors'][2]['description'],
-            'index is a required field.')
+            'Either `index` or `date` is required.')
+
+    @patch('mamasbm.service.api.get_ref_date')
+    def test_get_message_by_date(self, mock_get_ref_date):
+        mock_get_ref_date.return_value = date(2014, 1, 1)
+        profile_uuid = self.import_pregnancy_messages()
+
+        data = {'uuid': profile_uuid, 'day': 1, 'date': '20140907'}
+        resp = self.app.get('/api/message.json', data)
+        self.assertEqual(resp.json['week'], 40)
+
+        data = {'uuid': profile_uuid, 'day': 1, 'date': '20141201'}
+        resp = self.app.get('/api/message.json', data, status=400)
+        self.assertEqual(
+            resp.json['errors'][0]['description'],
+            'Index out of bounds')
+
+        data = {'uuid': profile_uuid, 'day': 1, 'date': '20140301'}
+        resp = self.app.get('/api/message.json', data)
+        self.assertEqual(resp.json['week'], 13)
+
+        data = {'uuid': profile_uuid, 'day': 1, 'date': '20130601'}
+        resp = self.app.get('/api/message.json', data)
+        self.assertEqual(resp.json['week'], 10)

@@ -39,6 +39,7 @@ setup(
     zip_safe=False,
     test_suite='mamasbm',
     install_requires=requires,
+    test_requires=['mock', ],
     entry_points="""\
     [paste.app_factory]
     main = mamasbm:main
